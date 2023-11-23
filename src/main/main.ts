@@ -3,24 +3,26 @@ import path from 'path';
 import electron, { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import sqlite from 'sqlite3';
+import sqlite, { RunResult } from 'sqlite3';
 import ExcelJS from 'exceljs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { EquipmentService } from './services/EquipmentService';
 
 app.disableHardwareAcceleration();
 
 // ============================================================================================================================
 
-function intializeAppDatabase() {
-  const userDataPath = app.getPath('userData');
-  const dbPath = path.join(userDataPath, 'app.db');
+const userDataPath = app.getPath('userData');
+const appDBPath = path.join(userDataPath, 'app.db');
+
+function intializeAppDatabase(dbPath: string) {
   const databaseExists = require('fs').existsSync(dbPath);
   console.log('DB exist =>>> ', databaseExists);
 
   if (!databaseExists) {
     const sqlite3 = sqlite.verbose();
-    const db = new sqlite3.Database(dbPath, (err) => {
+    const db = new sqlite3.Database(dbPath, function (this: RunResult, err) {
       if (err) {
         console.error(err.message);
       }
@@ -154,6 +156,12 @@ function intializeAppDatabase() {
     });
   }
 }
+
+ipcMain.handle('add-equipment', async (event, equipmentObject) => {
+  const equipmentService = new EquipmentService(appDBPath);
+  const result = await equipmentService.createEquipment(equipmentObject);
+  return result;
+});
 
 // const db = new sqlite3.Database(dbPath, (err) => {
 //   if (err) {
@@ -393,7 +401,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    intializeAppDatabase();
+    intializeAppDatabase(appDBPath);
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

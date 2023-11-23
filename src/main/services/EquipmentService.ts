@@ -1,35 +1,23 @@
 import { Equipment } from 'main/types';
+import { RunResult } from 'sqlite3';
 
 const sqlite3 = require('sqlite3').verbose();
 
 class EquipmentService {
-  db: ReturnType<typeof sqlite3>;
+  db!: RunResult;
 
-  constructror(dbFilePath: string) {
-    this.db = new sqlite3.Database(dbFilePath, (err: Error | null) => {
+  constructor(dbFilePath: string) {
+    console.log(dbFilePath);
+
+    this.db = new sqlite3.Database(dbFilePath, function (
+      this: RunResult,
+      err: Error | null
+    ) {
       if (err) {
         console.error(err.message);
       }
       console.log('Connected to the app database ', dbFilePath);
     });
-    this.db.run(`
-      CREATE TABLE IF NOT EXISTS equipment (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        model TEXT,
-        docsId INTEGER,
-        serialNumber TEXT,
-        producerId INTEGER,
-        typeId INTEGER,
-        assetVariety TEXT,
-        warranty TEXT,
-        serviceHistory INTEGER,
-        isWorking INTEGER,
-        isForNetwork INTEGER,
-        FOREIGN KEY (docsId) REFERENCES exploitationDocs(id),
-        FOREIGN KEY (producerId) REFERENCES producers(id),
-        FOREIGN KEY (typeId) REFERENCES equipmentType(id),
-        FOREIGN KEY (serviceHistory) REFERENCES serviceHistory(id)
-      )`);
   }
 
   createEquipment(equipmentObject: Equipment) {
@@ -74,7 +62,7 @@ class EquipmentService {
           isWorking,
           isForNetwork,
         ],
-        (err: Error | null) => {
+        function (this: RunResult, err: Error | null) {
           if (err) {
             console.error(`Error creating equipment: ${err.message}`);
             reject(err);
