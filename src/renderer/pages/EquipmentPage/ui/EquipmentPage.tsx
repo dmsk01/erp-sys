@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import React from 'react';
 import { AddEquipmentForm } from 'renderer/components/AddEquipmentForm';
+import { AddEquipmentTypeForm } from 'renderer/components/AddEquipmentTypeForm';
 
 function EquipmentPage() {
   const handleFileOpen = () => {
@@ -10,13 +11,15 @@ function EquipmentPage() {
     // eslint-disable-next-line no-console
     console.log(arg);
   });
+
   return (
     <div>
       <h1>Учет техники</h1>
-      <button onClick={handleFileOpen} id="open-file" type="button">
+      {/* <button onClick={handleFileOpen} id="open-file" type="button">
         open file
-      </button>
-      <AddEquipmentForm />
+      </button> */}
+      <AddEquipmentTypeForm />
+      {/* <AddEquipmentForm /> */}
     </div>
   );
 }

@@ -1,6 +1,12 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example'|'dialog:getAllUsers'|'dialog:addUser'|'dialog:openFile'|'dialog:fileOpened';
+export type Channels =
+  | 'ipc-example'
+  | 'dialog:getAllUsers'
+  | 'dialog:addUser'
+  | 'dialog:openFile'
+  | 'dialog:fileOpened'
+  | 'add-equipment-type';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -16,6 +22,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+    invoke<P extends any[], R>(channel: Channels, ...args: P) {
+      return ipcRenderer.invoke(channel, ...args) as Promise<R>;
     },
   },
 });

@@ -1,6 +1,6 @@
 import { Layout } from "antd";
 import React from "react";
-import { Header } from "renderer/components/Header";
+import { Header } from "renderer/widgets";
 
 interface AppLayoutProps {
   children:React.ReactNode
