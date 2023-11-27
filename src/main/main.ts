@@ -3,165 +3,37 @@ import path from 'path';
 import electron, { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import sqlite, { RunResult } from 'sqlite3';
 import ExcelJS from 'exceljs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { EquipmentService } from './services/EquipmentService';
+import {
+  EquipmentService,
+  ProducersService,
+  intializeAppDatabase,
+} from './services';
 
 app.disableHardwareAcceleration();
-
 // ============================================================================================================================
 
 const userDataPath = app.getPath('userData');
 const appDBPath = path.join(userDataPath, 'app.db');
 
-function intializeAppDatabase(dbPath: string) {
-  const databaseExists = require('fs').existsSync(dbPath);
-  console.log('DB exist =>>> ', databaseExists);
-
-  if (!databaseExists) {
-    const sqlite3 = sqlite.verbose();
-    const db = new sqlite3.Database(dbPath, function (this: RunResult, err) {
-      if (err) {
-        console.error(err.message);
-      }
-      console.log('Connected to the app database ', dbPath);
-    });
-    console.log('not exists');
-
-    db.serialize(() => {
-      db.run(`
-        CREATE TABLE IF NOT EXISTS equipment (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          model TEXT NOT NULL,
-          docsId INTEGER NOT NULL,
-          serialNumber TEXT NOT NULL,
-          producerId INTEGER NOT NULL,
-          typeId INTEGER NOT NULL,
-          assetVariety TEXT,
-          warranty TEXT,
-          serviceHistoryId INTEGER,
-          isWorking INTEGER,
-          isForNetwork INTEGER,
-          FOREIGN KEY (docsId) REFERENCES exploitationDocs(id),
-          FOREIGN KEY (producerId) REFERENCES producers(id),
-          FOREIGN KEY (typeId) REFERENCES equipmentType(id),
-          FOREIGN KEY (serviceHistoryId) REFERENCES serviceHistory(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS exploitationDocs (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          expOrder TEXT,
-          sensitiveDataSertificate TEXT,
-          hasFormular TEXT,
-          budgetRegisterNumber TEXT,
-          orderToUsageBringingIn TEXT,
-          nameOfSet TEXT,
-          comment TEXT,
-          FOREIGN KEY (nameOfSet) REFERENCES sets(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS sets (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS equipmentType (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS roomsEquipment (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          equipmentId INTEGER,
-          roomId INTEGER,
-          FOREIGN KEY (equipmentId) REFERENCES equipment(id),
-          FOREIGN KEY (roomId) REFERENCES rooms(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS rooms (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          code TEXT,
-          organizationId INTEGER,
-          FOREIGN KEY (organizationId) REFERENCES organizations(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS organizations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT,
-          contactsInfo TEXT
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS producers (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS serviceHistory (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          equipmentId INTEGER,
-          serviceRequestId INTEGER,
-          FOREIGN KEY (equipmentId) REFERENCES equipment(id),
-          FOREIGN KEY (serviceRequestId) REFERENCES serviceRequest(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS serviceRequest (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          roomId INTEGER,
-          person TEXT,
-          individualSerialNumberId TEXT,
-          problemDescription TEXT,
-          requestNumber TEXT,
-          requestPublicDate TEXT,
-          advanceDate TEXT,
-          fulfilmentDate TEXT,
-          FOREIGN KEY (individualSerialNumberId) REFERENCES individualSerialNumbers(id),
-          FOREIGN KEY (roomId) REFERENCES rooms(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS individualSerialNumbers (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          number INTEGER,
-          equipmentId INTEGER,
-          FOREIGN KEY (equipmentId) REFERENCES equipment(id)
-        )
-      `);
-      db.run(`
-        CREATE TABLE IF NOT EXISTS printerInfo (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          equipmentId INTEGER,
-          cartridgeModel TEXT,
-          cartridgeQuantity INTEGER,
-          FOREIGN KEY (equipmentId) REFERENCES equipment(id)
-        )
-      `);
-    });
-
-    db.close((err) => {
-      if (err) {
-        return console.error(err.message);
-      }
-      return undefined;
-    });
-  }
-}
-
-ipcMain.handle('add-equipment', async (event, equipmentObject) => {
+ipcMain.handle('add-equipment', async (_, equipmentObject) => {
   const equipmentService = new EquipmentService(appDBPath);
-  const result = await equipmentService.createEquipment(equipmentObject);
+  const result = await equipmentService.update(1, equipmentObject);
   return result;
 });
+
+ipcMain.handle('add-producer', async (_, propObject) => {
+  const producersService = new ProducersService(appDBPath);
+  const result = await producersService.create(propObject);
+  return result;
+});
+// ipcMain.handle('add-producer', async (_, producerObject) => {
+//   const producersService = new ProducersService(appDBPath);
+//   const result = await producersService.create(producerObject);
+//   return result;
+// });
 
 // const db = new sqlite3.Database(dbPath, (err) => {
 //   if (err) {

@@ -1,12 +1,11 @@
 export interface SeviceRequest {
   id: string;
-  docsId: number;
-  isn: string;
   room: string;
   person: string;
+  individualSerialNumber: string;
   problemDescription: string;
-  orderNumber: string;
+  requestNumber: string;
+  requestPublicDate: Date;
   advanceDate: Date;
   fulfilmentDate: Date;
-  publicDate: Date;
 }

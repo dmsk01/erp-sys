@@ -1,13 +1,17 @@
 export interface Equipment {
   id: string;
   model: string;
-  docsId: number;
+  docsId?: number;
   serialNumber: string;
-  producerId: number;
+  producerId: Producer;
   typeId: number;
   assetVariety: string;
   warranty: string;
-  serviceHistory: number;
+  serviceHistory?: number;
   isWorking: boolean;
   isForNetwork: boolean;
+}
+
+export interface Producer {
+  name: string;
 }

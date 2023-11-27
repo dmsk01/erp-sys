@@ -6,7 +6,10 @@ export type Channels =
   | 'dialog:addUser'
   | 'dialog:openFile'
   | 'dialog:fileOpened'
-  | 'add-equipment-type';
+  | 'add-equipment-type'
+  | 'add-equipment'
+  | 'add-producer'
+  | 'update-producer';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

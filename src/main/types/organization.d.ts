@@ -4,13 +4,14 @@ export interface Organization {
   contactInfo: string;
 }
 
-export interface Rooms {
+export interface Room {
   id: string;
   code: string;
-  organization_id: string;
+  organizationId: string;
 }
 
 export interface RoomEquipment {
-  roomId: string;
-  equipmentId: string;
+  id: number;
+  equipmentId: number;
+  roomId: number;
 }

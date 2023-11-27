@@ -1,7 +1,6 @@
 import { BrowserWindow } from 'electron';
 import React from 'react';
-import { AddEquipmentForm } from 'renderer/components/AddEquipmentForm';
-import { AddEquipmentTypeForm } from 'renderer/components/AddEquipmentTypeForm';
+import { AddEquipmentForm, AddProducerForm } from 'renderer/widgets';
 
 function EquipmentPage() {
   const handleFileOpen = () => {
@@ -18,8 +17,9 @@ function EquipmentPage() {
       {/* <button onClick={handleFileOpen} id="open-file" type="button">
         open file
       </button> */}
-      <AddEquipmentTypeForm />
-      {/* <AddEquipmentForm /> */}
+      {/* <AddEquipmentTypeForm /> */}
+      <AddEquipmentForm />
+      {/* <AddProducerForm /> */}
     </div>
   );
 }
