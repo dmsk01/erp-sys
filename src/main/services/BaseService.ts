@@ -1,9 +1,10 @@
+import { createTransaction } from 'main/transactions';
 import { Producer } from 'main/types';
 import { Database, RunResult } from 'sqlite3';
 
 const sqlite3 = require('sqlite3').verbose();
 
-class BaseService<T> {
+class BaseService {
   db!: Database;
 
   tableName: string;
@@ -22,30 +23,30 @@ class BaseService<T> {
     });
   }
 
-  create(propsObject: T) {
-    const objKeys = Object.keys(propsObject);
-    const propsFields = `(${objKeys.join(',')})`;
-    const questionMarks = objKeys.reduce((prev, cur, index, array) => {
-      const querySymbol = index === array.length - 1 ? '?' : '?, ';
-      const res = prev + querySymbol;
-      return res;
-    }, '');
-
-    return new Promise((resolve, reject) => {
-      this.db.run(
-        `INSERT INTO ${this.tableName} ${propsFields} VALUES(${questionMarks})`,
-        [...Object.values(propsObject)],
-        function (this: RunResult, err: Error | null) {
-          if (err) {
-            console.error(`Error creating: ${err.message}`);
-            reject(err);
-          } else {
-            console.log(`Created with ID: ${this.lastID}`);
-            resolve(this.lastID);
-          }
-        }
-      );
-    });
+  create(propsObject: Record<string, string>) {
+    return createTransaction(this.db, this.tableName, propsObject);
+    // const objKeys = Object.keys(propsObject);
+    // const propsFields = `(${objKeys.join(',')})`;
+    // const questionMarks = objKeys.reduce((prev, cur, index, array) => {
+    //   const querySymbol = index === array.length - 1 ? '?' : '?, ';
+    //   const res = prev + querySymbol;
+    //   return res;
+    // }, '');
+    // return new Promise((resolve, reject) => {
+    //   this.db.run(
+    //     `INSERT INTO ${this.tableName} ${propsFields} VALUES(${questionMarks})`,
+    //     [...Object.values(propsObject)],
+    //     function (this: RunResult, err: Error | null) {
+    //       if (err) {
+    //         console.error(`Error creating: ${err.message}`);
+    //         reject(err);
+    //       } else {
+    //         console.log(`Created with ID: ${this.lastID}`);
+    //         resolve(this.lastID);
+    //       }
+    //     }
+    //   );
+    // });
   }
 
   getAll() {
@@ -64,7 +65,7 @@ class BaseService<T> {
     });
   }
 
-  update(id: number, propObject: T) {
+  update(id: number, propObject: Record<string, string>) {
     const updatedFields = Object.keys(propObject).reduce(
       (prev, cur, index, array) => {
         const querySymbol = index === array.length - 1 ? '=? ' : '=?, ';
@@ -73,9 +74,6 @@ class BaseService<T> {
         return res;
       },
       ''
-    );
-    console.log(
-      `UPDATE ${this.tableName} SET ${updatedFields} WHERE id = ${id}`
     );
 
     return new Promise<void>((resolve, reject) => {

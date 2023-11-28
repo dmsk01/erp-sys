@@ -1,7 +1,6 @@
-import { Equipment } from 'main/types';
 import { BaseService } from './BaseService';
 
-class EquipmentService extends BaseService<Equipment> {
+class EquipmentService extends BaseService {
   constructor(dbFilePath: string) {
     super(dbFilePath, 'equipment');
   }

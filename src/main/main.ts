@@ -20,15 +20,15 @@ const appDBPath = path.join(userDataPath, 'app.db');
 
 ipcMain.handle('add-equipment', async (_, equipmentObject) => {
   const equipmentService = new EquipmentService(appDBPath);
-  const result = await equipmentService.update(1, equipmentObject);
+  const result = await equipmentService.create(equipmentObject);
   return result;
 });
 
-ipcMain.handle('add-producer', async (_, propObject) => {
-  const producersService = new ProducersService(appDBPath);
-  const result = await producersService.create(propObject);
-  return result;
-});
+// ipcMain.handle('add-producer', async (_, propObject) => {
+//   const producersService = new ProducersService(appDBPath);
+//   const result = await producersService.create(propObject);
+//   return result;
+// });
 // ipcMain.handle('add-producer', async (_, producerObject) => {
 //   const producersService = new ProducersService(appDBPath);
 //   const result = await producersService.create(producerObject);
