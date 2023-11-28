@@ -1,6 +1,6 @@
-import { createTransaction } from 'main/transactions';
 import { Producer } from 'main/types';
 import { Database, RunResult } from 'sqlite3';
+import { createTransaction } from '../transactions';
 
 const sqlite3 = require('sqlite3').verbose();
 

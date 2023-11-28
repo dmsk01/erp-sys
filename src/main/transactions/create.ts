@@ -1,5 +1,5 @@
-import { insertQueryConstructor } from 'main/utils';
 import { Database, RunResult } from 'sqlite3';
+import { insertQueryConstructor } from '../utils';
 
 function createTransaction(
   db: Database,

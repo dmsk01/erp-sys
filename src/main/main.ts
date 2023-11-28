@@ -3,14 +3,10 @@ import path from 'path';
 import electron, { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import ExcelJS from 'exceljs';
-import MenuBuilder from './menu';
+// import ExcelJS from 'exceljs';
+// import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import {
-  EquipmentService,
-  ProducersService,
-  intializeAppDatabase,
-} from './services';
+import { EquipmentService, intializeAppDatabase } from './services';
 
 app.disableHardwareAcceleration();
 // ============================================================================================================================
@@ -244,8 +240,8 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  // const menuBuilder = new MenuBuilder(mainWindow);
+  // menuBuilder.buildMenu();
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
