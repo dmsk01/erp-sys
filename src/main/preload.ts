@@ -2,12 +2,14 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
   | 'ipc-example'
+  | 'refresh-data'
   | 'dialog:getAllUsers'
   | 'dialog:addUser'
   | 'dialog:openFile'
   | 'dialog:fileOpened'
   | 'add-equipment-type'
   | 'add-equipment'
+  | 'get-all-equipment'
   | 'add-producer'
   | 'update-producer';
 

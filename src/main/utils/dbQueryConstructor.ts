@@ -26,7 +26,15 @@ function updateQueryConstructor(
   return `UPDATE ${tableName} SET ${questionMarks} WHERE id=?`;
 }
 
+function selectQueryConstructor(tableName: string) {
+  return `SELECT * FROM ${tableName}`;
+}
+
 // const test = { a: '1', b: '2' };
 // console.log(updateQueryConstructor('producers', test));
 
-export { insertQueryConstructor, updateQueryConstructor };
+export {
+  insertQueryConstructor,
+  updateQueryConstructor,
+  selectQueryConstructor,
+};

@@ -4,7 +4,7 @@ import { BaseService } from './BaseService';
 
 // const sqlite3 = require('sqlite3').verbose();
 
-class ProducersService extends BaseService<Producer> {
+class ProducersService extends BaseService {
   constructor(dbFilePath: string) {
     super(dbFilePath, 'producers');
   }

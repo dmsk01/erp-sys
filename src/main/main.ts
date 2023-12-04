@@ -1,6 +1,6 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 import path from 'path';
-import electron, { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import electron, { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 // import ExcelJS from 'exceljs';
@@ -16,8 +16,15 @@ const appDBPath = path.join(userDataPath, 'app.db');
 
 ipcMain.handle('add-equipment', async (_, equipmentObject) => {
   const equipmentService = new EquipmentService(appDBPath);
-  const result = await equipmentService.create(equipmentObject);
-  return result;
+  // const result = await equipmentService.getAll();
+  await equipmentService.create(equipmentObject);
+  const freshData = await equipmentService.getAll();
+  return freshData;
+});
+ipcMain.handle('get-all-equipment', async () => {
+  const equipmentService = new EquipmentService(appDBPath);
+  const freshData = await equipmentService.getAll();
+  return freshData;
 });
 
 // ipcMain.handle('add-producer', async (_, propObject) => {

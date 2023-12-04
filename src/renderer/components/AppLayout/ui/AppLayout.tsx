@@ -1,20 +1,18 @@
-import { Layout } from "antd";
-import React from "react";
-import { Header } from "renderer/widgets";
+import { Layout } from 'antd';
+import React from 'react';
+import { Header } from 'renderer/widgets';
 
 interface AppLayoutProps {
-  children:React.ReactNode
+  children: React.ReactNode;
 }
 
-function AppLayout({children}:AppLayoutProps){
+function AppLayout({ children }: AppLayoutProps) {
   return (
     <Layout>
       <Header />
-      <main>
-        {children}
-      </main>
+      <main>{children}</main>
     </Layout>
-  )
+  );
 }
 
-export { AppLayout }
+export { AppLayout };

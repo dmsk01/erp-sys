@@ -1,6 +1,11 @@
 import { BrowserWindow } from 'electron';
 import React from 'react';
-import { AddEquipmentForm, AddProducerForm } from 'renderer/widgets';
+import {
+  AddEquipmentForm,
+  AddProducerForm,
+  DataTable,
+  TableTabs,
+} from 'renderer/widgets';
 
 function EquipmentPage() {
   const handleFileOpen = () => {
@@ -14,11 +19,13 @@ function EquipmentPage() {
   return (
     <div>
       <h1>Учет техники</h1>
+      <TableTabs />
       {/* <button onClick={handleFileOpen} id="open-file" type="button">
         open file
       </button> */}
       {/* <AddEquipmentTypeForm /> */}
-      <AddEquipmentForm />
+      {/* <AddEquipmentForm /> */}
+
       {/* <AddProducerForm /> */}
     </div>
   );

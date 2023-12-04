@@ -11,7 +11,10 @@ function Header() {
             <Link to="/service">Обслуживание</Link>
           </li>
           <li>
-            <Link to="/equipment">Технические средства</Link>
+            <Link to="/equipment">Учет технических средств</Link>
+          </li>
+          <li>
+            <Link to="/spare-parts">Запасные инструменты и принадлежности</Link>
           </li>
         </ul>
       </nav>

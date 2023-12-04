@@ -1,1 +1,6 @@
-export { createTransaction } from './create';
+export {
+  createTransaction,
+  updateTransaction,
+  getAllTransaction,
+  deleteTransaction,
+} from './base';
