@@ -16,16 +16,21 @@ const appDBPath = path.join(userDataPath, 'app.db');
 
 ipcMain.handle('add-equipment', async (_, equipmentObject) => {
   const equipmentService = new EquipmentService(appDBPath);
-  // const result = await equipmentService.getAll();
-  await equipmentService.create(equipmentObject);
-  const freshData = await equipmentService.getAll();
-  return freshData;
+  const res = await equipmentService.insert(equipmentObject);
+  return res;
 });
-ipcMain.handle('get-all-equipment', async () => {
+
+ipcMain.on('data-added', async (event) => {
   const equipmentService = new EquipmentService(appDBPath);
-  const freshData = await equipmentService.getAll();
-  return freshData;
+  const newData = await equipmentService.getAll();
+  event.reply('update-data', newData);
 });
+
+// ipcMain.handle('get-all-equipment', async () => {
+//   const equipmentService = new EquipmentService(appDBPath);
+//   const freshData = await equipmentService.getAll();
+//   return freshData;
+// });
 
 // ipcMain.handle('add-producer', async (_, propObject) => {
 //   const producersService = new ProducersService(appDBPath);
@@ -44,51 +49,6 @@ ipcMain.handle('get-all-equipment', async () => {
 //   }
 //   console.log('Connected to the users database ', dbPath);
 // });
-
-// db.run(
-//   "CREATE TABLE IF NOT EXISTS equipmentType ('id' INTEGER NOT NULL UNIQUE,'type' TEXT NOT NULL, PRIMARY KEY('id' AUTOINCREMENT))",
-//   // 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY UNIQUE, name TEXT NOT NULL, surname TEXT NOT NULL)',
-//   function (error) {
-//     if (error) {
-//       console.log(error);
-//       return error;
-//     }
-//     console.log('DB successfully created');
-//     return null;
-//   }
-// );
-
-// async function handleGetAllUsers(event) {
-//   return new Promise((resolve) => {
-//     db.all('SELECT * FROM users', (err, rows) => {
-//       if (err) {
-//         throw new Error(err.message);
-//       }
-//       resolve(rows);
-//       event.reply('dialog:getAllUsers', rows);
-//     });
-//   });
-// }
-
-// async function handleAddUser(user: any) {
-//   const { name, surname } = user;
-//   return db.run(
-//     `INSERT INTO users (name, surname) VALUES(?, ?)`,
-//     [name, surname],
-//     function (err) {
-//       if (err) {
-//         console.log(err.message);
-//         // if (err = 'SQLITE_ERROR: no such table: users') {
-//         //   createTable();
-//         // }
-//         return err.message;
-//       }
-//       console.log(`A row has been inserted with rowid ${this.lastID}`);
-//       console.log(`${this.changes}`);
-//       return this.changes;
-//     }
-//   );
-// }
 
 // const handleFileOpen = (event) => {
 //   const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -133,27 +93,6 @@ ipcMain.handle('get-all-equipment', async () => {
 //       })
 //       .catch((err) => console.log(err));
 //   }
-// };
-
-// const addEquipmentType = (type: string) => {
-//   const db = new sqlite3.Database(dbPath, (err) => {
-//     if (err) {
-//       console.error(err.message);
-//     }
-//     console.log('Connected to the users database ', dbPath);
-//   });
-//   db.run(
-//     'INSERT INTO equipmentType (type) VALUES (?);',
-//     [type],
-//     function (error) {
-//       if (error) {
-//         console.log(error);
-//         return error;
-//       }
-//       console.log('Data successfully added to DB');
-//       return null;
-//     }
-//   );
 // };
 
 // ipcMain.on('dialog:getAllUsers', (event) => handleGetAllUsers(event));
@@ -220,8 +159,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1200,
+    height: 800,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -239,6 +178,7 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
+      mainWindow.maximize();
       mainWindow.show();
     }
   });

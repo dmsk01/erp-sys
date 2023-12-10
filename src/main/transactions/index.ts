@@ -1,5 +1,5 @@
 export {
-  createTransaction,
+  insertTransaction,
   updateTransaction,
   getAllTransaction,
   deleteTransaction,

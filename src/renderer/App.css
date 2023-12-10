@@ -3,13 +3,12 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
-
 body {
   height: 100vh;
   min-width: 100%;
   margin: 0;
   font-family: sans-serif;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 
 button {

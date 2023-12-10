@@ -1,10 +1,10 @@
-function insertQueryConstructor(
+function insertQueryConstructor<T extends object>(
   tableName: string,
-  object: Record<string, string>
+  object: T
 ) {
   const objKeys = Object.keys(object);
   const propsFields = `(${objKeys.join(',')})`;
-  const questionMarks = objKeys.reduce((prev, cur, index, array) => {
+  const questionMarks = objKeys.reduce((prev, _, index, array) => {
     const querySymbol = index === array.length - 1 ? '?' : '?, ';
     const res = prev + querySymbol;
     return res;
@@ -12,9 +12,9 @@ function insertQueryConstructor(
   return `INSERT INTO ${tableName} ${propsFields} VALUES(${questionMarks})`;
 }
 
-function updateQueryConstructor(
+function updateQueryConstructor<T extends object>(
   tableName: string,
-  object: Record<string, string>
+  object: T
 ) {
   const objKeys = Object.keys(object);
   const questionMarks = objKeys.reduce((prev, cur, index, array) => {

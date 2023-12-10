@@ -1,21 +1,11 @@
 import { Database, RunResult } from 'sqlite3';
-import {
-  createTransaction,
-  getAllTransaction,
-  updateTransaction,
-  deleteTransaction,
-} from '../transactions';
+import sqlite3 from 'sqlite3';
+import { insertQueryConstructor, updateQueryConstructor } from '../utils';
 
-const sqlite3 = require('sqlite3').verbose();
-
-class BaseService {
+class BaseService<T extends object> {
   db!: Database;
 
-  tableName: string;
-
-  constructor(dbFilePath: string, tableName: string) {
-    this.tableName = tableName;
-
+  constructor(dbFilePath: string) {
     this.db = new sqlite3.Database(dbFilePath, function (
       this: RunResult,
       err: Error | null
@@ -27,20 +17,45 @@ class BaseService {
     });
   }
 
-  create(propsObject: Record<string, string>) {
-    return createTransaction(this.db, this.tableName, propsObject);
+  protected executeQuery(query: string, values?: any[]): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.all(query, values, (error, result) => {
+        this.db.close();
+
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 
-  getAll() {
-    return getAllTransaction(this.db, this.tableName);
+  async insert(propsObject: T) {
+    const query = insertQueryConstructor(this.getTableName(), propsObject);
+    const values = this.mapToDatabase(propsObject);
+    const res = await this.executeQuery(query, values);
+    return res;
   }
 
-  update(id: number, propObject: Record<string, string>) {
-    return updateTransaction(id, this.db, this.tableName, propObject);
+  async getAll(): Promise<T[]> {
+    const query = `SELECT * FROM ${this.getTableName()}`;
+    const res = await this.executeQuery(query);
+    return res.map((record: any) => this.mapToInterface(record));
   }
 
-  delete(id: number) {
-    return deleteTransaction(id, this.db, this.tableName);
+  async update(propsObject: T, id: number) {
+    const query = updateQueryConstructor(this.getTableName(), propsObject);
+    const values = [...this.mapToDatabase(propsObject), id];
+    const res = await this.executeQuery(query, values);
+    return res;
+  }
+
+  async delete(id: number) {
+    const query = `DELETE FROM ${this.getTableName()} WHERE id = ?`;
+    const values = [id];
+    const res = await this.executeQuery(query, values);
+    return res;
   }
 
   close(): void {
@@ -51,6 +66,18 @@ class BaseService {
         console.log('Closed the database connection');
       }
     });
+  }
+
+  protected getTableName(): string {
+    throw new Error('Method not implemented');
+  }
+
+  protected mapToInterface(record: unknown): T {
+    throw new Error('Method not implemented');
+  }
+
+  protected mapToDatabase(record: T): unknown[] {
+    throw new Error('Method not implemented');
   }
 }
 

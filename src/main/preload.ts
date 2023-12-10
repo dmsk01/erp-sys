@@ -11,6 +11,8 @@ export type Channels =
   | 'add-equipment'
   | 'get-all-equipment'
   | 'add-producer'
+  | 'data-added'
+  | 'update-data'
   | 'update-producer';
 
 contextBridge.exposeInMainWorld('electron', {

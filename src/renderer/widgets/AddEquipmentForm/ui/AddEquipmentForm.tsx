@@ -49,8 +49,7 @@ function AddEquipmentForm() {
     const resp = await window.electron.ipcRenderer
       .invoke('add-equipment', values)
       .catch(console.log);
-
-    console.log(resp);
+    if (resp) window.electron.ipcRenderer.sendMessage('data-added', []);
   };
   return (
     <AddForm
